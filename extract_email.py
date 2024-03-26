@@ -66,7 +66,6 @@ try:
                         if not line: break
                         # 跳过空行
                         if not line.strip(): continue
-                        1/0
                         # 对账户的处理
                         users = line.split(':')
                         if len(users) != 2: continue
