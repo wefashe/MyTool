@@ -27,7 +27,7 @@ try:
                 break
             continue
         except Exception as e:
-            print(f'\033[31m输入的文件目录有误, 请重新输入: {e}\033[0m')
+            print(f'\033[31m输入的文件目录有误, 请重新输入: {repr(e)}\033[0m')
             continue
         # 对路径的校验
         if not work_path:continue
