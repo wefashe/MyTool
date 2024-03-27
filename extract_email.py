@@ -84,6 +84,7 @@ try:
                         # 账户密码写入文件中
                         user_count += 1  
                         output_txt.write(f'{user_name}----{pass_word}\n')   
+                        output_txt.flush()
                 print(f'\033[1;34m[{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}]: \033[0m第 {file_count} 个文件提取完成-> {input_file}')
             except Exception as e:
                 fail_count += 1
@@ -91,6 +92,7 @@ try:
                     output_fail_txt_path = os.path.join(os.path.dirname(output_txt_path), "output_fail.txt")
                     output_fail_txt = open(output_fail_txt_path, mode='a+', encoding="UTF-8")
                 output_fail_txt.write(f'{input_file}\n')   
+                output_fail_txt.flush()
                 print(f'\033[1;34m[{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}]: \033[0m\033[31m第 {file_count} 个文件提取失败-> {input_file}\033[0m')
                 if not is_skin:
                     fail_choose = input("当前文件提取失败,请选择接下来的操作?(x: 直接退出/y: 跳过所有/z: 跳过当前): ")
@@ -101,6 +103,9 @@ try:
                     else:
                         print(f'\033[31m第 {e.__traceback__.tb_lineno} 行代码执行产生了错误, 请联系开发者解决: {e}\033[0m')
                     continue
+        else:
+            print('该目录里未找到符合的文件！')
+            continue
         output_txt.close()
         end_time = time.time()
         print(f'\033[32m本次提取结果保存到文件: {output_txt_path}, 提取成功: {file_count - fail_count}个, 提取结果: {user_count}个, 提取耗时: {(end_time - start_time):.2f}秒\033[0m') 
@@ -112,8 +117,8 @@ try:
             break
 
         # 去重处理
-        result = input(f"您需要对上面 {os.path.basename(output_txt_path)} 文件进行去重吗?(y/n): ")
-        if result.lower() != 'y':
+        distinct_choose = input(f"您需要对上面 {os.path.basename(output_txt_path)} 文件进行去重吗?(y/n): ")
+        if distinct_choose.lower() != 'y':
             continue
         # 总文件数
         total_count = 0
@@ -132,6 +137,7 @@ try:
                 if md5_line not in md5_line_set:
                     md5_line_set.add(md5_line)
                     output_distinct_file.write(line)
+                    output_distinct_file.flush()
                 else:
                     distinct_count += 1
                     print(f'\033[1;34m[{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}]: \033[0m第 {total_count} 行数据重复-> {line.strip()}')
