@@ -74,6 +74,8 @@ try:
                         # 简单判断是否邮箱
                         user_name = users[1].strip()
                         if '@' not in user_name: continue
+                        # 用户名长度36位内
+                        if len(user_name) > 36: continue
                         # 对密码的处理
                         line = file.readline()
                         passs = line.split(':')
@@ -81,6 +83,8 @@ try:
                         pass_prefix = passs[0].strip()
                         if pass_prefix not in ('PASS','Password'): continue
                         pass_word = passs[1].strip()
+                        # 用户名长度36位内
+                        if len(pass_word) > 36: continue
                         # 账户密码写入文件中
                         user_count += 1  
                         output_txt.write(f'{user_name}----{pass_word}\n')   
