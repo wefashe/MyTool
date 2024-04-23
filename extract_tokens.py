@@ -37,7 +37,7 @@ try:
         work_path = os.path.abspath(work_path)
         print(f'\033[32m实际提取的文件目录：{work_path}\033[0m')     
         # 统计路径，返回迭代器
-        files_iterator  = glob.iglob(os.path.join(glob.escape(work_path), "**", "*password*.txt") , recursive=True)
+        files_iterator  = glob.iglob(os.path.join(glob.escape(work_path), "**", "Steam","*tokens*.txt") , recursive=True)
         # 创建结果文件
         root_path = os.getcwd()
         output_txt_path = os.path.join(root_path, "output.txt")
@@ -66,28 +66,9 @@ try:
                         if not line: break
                         # 跳过空行
                         if not line.strip(): continue
-                        # 对账户的处理
-                        users = line.split(':')
-                        if len(users) != 2: continue
-                        user_prefix = users[0].strip()
-                        if user_prefix not in ('USER','Username'): continue
-                        # 简单判断是否邮箱
-                        user_name = users[1].strip()
-                        if '@' not in user_name: continue
-                        # 用户名长度36位内
-                        if len(user_name) > 36: continue
-                        # 对密码的处理
-                        line = file.readline()
-                        passs = line.split(':')
-                        if len(passs) != 2: continue
-                        pass_prefix = passs[0].strip()
-                        if pass_prefix not in ('PASS','Password'): continue
-                        pass_word = passs[1].strip()
-                        # 用户名长度36位内
-                        if len(pass_word) > 36: continue
                         # 账户密码写入文件中
                         user_count += 1  
-                        output_txt.write(f'{user_name}----{pass_word}\n')   
+                        output_txt.write(f'{line}\n')   
                         output_txt.flush()
                 print(f'\033[1;34m[{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}]: \033[0m第 {file_count} 个文件提取完成-> {input_file}')
             except Exception as e:
