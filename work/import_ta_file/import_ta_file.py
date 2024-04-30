@@ -107,3 +107,4 @@ with open(TA_FILE_PATH,'r',encoding = encoding) as file:
     print('host: '+ host +', user: '+ user+', database: ' +database+', table: '+table_name + ' 新增 '+ str(cursor.rowcount)+ ' 条数据！')
 cursor.close()
 conn.close()
+os.system('pause')
