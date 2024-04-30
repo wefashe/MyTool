@@ -11,7 +11,7 @@ import configparser
 导入TA文件
 '''
 
-TA_FILE_PATH = input("TA文件地址: \033[0m").strip('"').strip('&').strip().strip("'").strip()
+TA_FILE_PATH = input("TA文件地址: ").strip('"').strip('&').strip().strip("'").strip()
 if not TA_FILE_PATH:TA_FILE_PATH =os.path.abspath(os.path.join(__file__,'..','OFD_99_25_20210514_52.TXT')) 
 IGNORE_LINE = 109
 file_type = TA_FILE_PATH[TA_FILE_PATH.rfind('_') + 1 : TA_FILE_PATH.rfind('.')]
