@@ -3,6 +3,7 @@
 
 import os
 import pymysql
+import cx_Oracle
 import numpy as np
 import configparser
 
@@ -10,13 +11,34 @@ import configparser
 导入TA文件
 '''
 
-TA_FILE_PATH = 'OFD_99_25_20210514_52.TXT'
+TA_FILE_PATH = input("TA文件地址: \033[0m").strip('"').strip('&').strip().strip("'").strip()
+if not TA_FILE_PATH:TA_FILE_PATH =os.path.abspath(os.path.join(__file__,'..','OFD_99_25_20210514_52.TXT')) 
 IGNORE_LINE = 109
 file_type = TA_FILE_PATH[TA_FILE_PATH.rfind('_') + 1 : TA_FILE_PATH.rfind('.')]
+if not os.path.exists(TA_FILE_PATH):
+    raise ValueError(TA_FILE_PATH+' 文件不存在！')
 
 CONFIG_PATH = 'config.ini'
+CONFIG_PATH = os.path.abspath(os.path.join(__file__,'..',CONFIG_PATH))
+if not os.path.exists(CONFIG_PATH):
+    raise ValueError(CONFIG_PATH+' 文件不存在！')
 config = configparser.ConfigParser()
-config.read(os.path.abspath(os.path.join(__file__,'..',CONFIG_PATH)),encoding='utf-8')
+config.read(CONFIG_PATH,encoding='utf-8')
+
+if config.has_section('mysql'):
+    host, user, password, database = config['mysql'].values()
+    conn = pymysql.connect( host=host,
+                        user=user,
+                        password=password,
+                        database=database)
+elif config.has_section('oracle'):
+    host, user, password, database = config['oracle'].values()
+    conn = cx_Oracle.connect( host=host,
+                        user=user,
+                        password=password,
+                        database=database)
+else:
+    raise ValueError('未找到支持的数据库配置！')
 
 file_type_sections = [section for section in config.sections() if section.startswith(file_type + '_')]
 if len(file_type_sections) == 0:
@@ -27,15 +49,9 @@ table_name = file_type_section[file_type_section.find('_') + 1:]
 if not table_name:
    exit()
 
-host, user, password, database = config['mysql'].values()
-conn = pymysql.connect( host=host,
-                    user=user,
-                    password=password,
-                    database=database)
 cursor = conn.cursor()
-
 encoding = 'gbk'
-with open(os.path.abspath(os.path.join(__file__,'..',TA_FILE_PATH)),'r',encoding = encoding) as file:
+with open(TA_FILE_PATH,'r',encoding = encoding) as file:
     lines = file.readlines()
     lines = lines[IGNORE_LINE : -1]
     if len(lines) == 0:
@@ -88,6 +104,6 @@ with open(os.path.abspath(os.path.join(__file__,'..',TA_FILE_PATH)),'r',encoding
     sql = 'insert into ' + table_name + ' (' + ','.join(fields)	+') values ('+','.join(np.full(len(fields), '%s'))+')'
     cursor.executemany(sql, values)
     conn.commit()
-    print(table_name + ' 表成功新增 '+ str(cursor.rowcount)+ ' 条数据！')
+    print('host: '+ host +', user: '+ user+', database: ' +database+', table: '+table_name + ' 新增 '+ str(cursor.rowcount)+ ' 条数据！')
 cursor.close()
 conn.close()
