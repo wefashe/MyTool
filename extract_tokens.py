@@ -60,16 +60,20 @@ try:
                     input_file = "\\\\?\\" + input_file
             try:
                 with open(input_file, mode='r', encoding="UTF-8", errors='ignore') as file:
-                    while True:
-                        line = file.readline()
-                        # 读取完后跳出
-                        if not line: break
-                        # 跳过空行
-                        if not line.strip(): continue
-                        # 账户密码写入文件中
-                        user_count += 1  
-                        output_txt.write(f'{line}\n')   
-                        output_txt.flush()
+                    lines = file.readlines()  # 读取所有行
+                    last_line = lines[-1]  # 取最后一行
+                    # 读取完后跳出
+                    if not last_line: break
+                    # 跳过空行
+                    if not last_line.strip(): continue
+                    # 账户密码写入文件中
+                    user_count += 1  
+                    if ": " in last_line:
+                        last_line = last_line.split(": ")[1]
+                    if '\n' not in last_line:
+                        last_line = last_line + '\n'
+                    output_txt.write(f'666----{last_line}')   
+                    output_txt.flush()
                 print(f'\033[1;34m[{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}]: \033[0m第 {file_count} 个文件提取完成-> {input_file}')
             except Exception as e:
                 fail_count += 1
