@@ -67,18 +67,15 @@ try:
                     ret = re.search('\"eyAi([^\"]*)\"',context, re.DOTALL)
                     if not ret:
                        continue
-                    text = ret.group().strip('"')
+                    text = ret.group().strip('"')+ '\n'
                     # 父目录
                     parent_path = os.path.dirname(input_file)
                     # 相对目录
                     rel_path = work_path
-                    print(parent_path)
-                    print(work_path)
                     if parent_path != work_path:
                         rel_path = os.path.relpath(parent_path, work_path)
-                    print(rel_path)
                     user_count += 1  
-                    output_txt.write(f'{rel_path}----{ text}')   
+                    output_txt.write(f'{rel_path}----{text}')   
                     output_txt.flush()
                 print(f'\033[1;34m[{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}]: \033[0m第 {file_count} 个文件提取完成-> {input_file}')
             except Exception as e:
