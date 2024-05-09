@@ -10,6 +10,7 @@ import os
 import re
 import glob
 import time
+from itertools import chain
 
 while True:
     try:
@@ -32,7 +33,8 @@ while True:
         continue
     break
 
-work_path_name = os.path.join(glob.escape(work_path), "**",'[cCtT]o[nk][fe][in][gs].[tv][xd][tf]')
+work_path_name = os.path.join(glob.escape(work_path), "**",'*[cCtT]o[nk][fe][in][gs].[tv][xd][tf]')
+# work_path_name = os.path.join(glob.escape(work_path), "**",'*')
 files_iterator  = glob.iglob( work_path_name, recursive=True)
 
 result_path = os.path.join(os.getcwd(), 'result')
@@ -64,11 +66,11 @@ with open(config_666_path, mode=mode, encoding="UTF-8") as config_666_file, \
     start_time = time.time()
     for file_path in files_iterator:
         file_name = os.path.basename(file_path)
-        if 'config.vdf' != file_name.lower() and 'tokens.txt' != file_name.lower():
+        if 'config.vdf' != file_name.lower() and file_name.lower() not in ['tokens.txt','ey_tokens.txt']:
             continue
         try:
             if 'config.vdf' == file_name.lower(): config_count += 1
-            if 'tokens.txt' == file_name.lower(): tokens_count += 1
+            if file_name.lower() in ['tokens.txt','ey_tokens.txt']: tokens_count += 1
             with open(file_path, mode='r', encoding="UTF-8", errors='ignore') as file:
                 context = file.read()
                 parent_path = os.path.dirname(file_path)
@@ -79,7 +81,7 @@ with open(config_666_path, mode=mode, encoding="UTF-8") as config_666_file, \
                 size =  len(matches) 
                 if size > 0:
                     if 'config.vdf' == file_name.lower(): config_exist_count += 1
-                    if 'tokens.txt' == file_name.lower(): tokens_exist_count += 1                    
+                    if file_name.lower() in ['tokens.txt','ey_tokens.txt']: tokens_exist_count += 1                    
                 for matche in matches:
                     text = matche.strip('"').strip('\n').strip()+ '\n'
                     if 'config.vdf' == file_name.lower():
@@ -87,7 +89,7 @@ with open(config_666_path, mode=mode, encoding="UTF-8") as config_666_file, \
                         config_666_file.flush()
                         config_pos_file.write(f'{rel_path}----{text}')   
                         config_pos_file.flush()
-                    if 'tokens.txt' == file_name.lower():
+                    if file_name.lower() in ['tokens.txt','ey_tokens.txt']:
                         tokens_666_file.write(f'666----{text}')   
                         tokens_666_file.flush()
                         tokens_pos_file.write(f'{rel_path}----{text}')   
