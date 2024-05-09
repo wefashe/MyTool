@@ -68,10 +68,10 @@ for file_path in files_iterator:
                     tokens_pos_file.write(f'{rel_path}----{text}')   
                     tokens_pos_file.flush()
                 if size > 0 : tokens_exist_count += 1
-        print(f'第 {config_count + tokens_count} 个文件提取到 {size} 个-> {file_path}')
+        print(f'第 {config_count + tokens_count} 个文件提取到 {size} 条数据-> {file_path}')
     except Exception as e:
         failed_count += 1
-        print(f'第 {config_count + tokens_count} 个文件提取失败-> {file_path}, 第 {e.__traceback__.tb_lineno} 行代码执行错误: {e}')
+        print(f'第 {config_count + tokens_count} 个文件提取数据失败-> {file_path}, 第 {e.__traceback__.tb_lineno} 行代码执行错误: {e}')
 print(f'共找到 {config_count + tokens_count} 个文件, {config_count} 个config.vdf文件, {config_exist_count} 个存在数据, \
 {tokens_count} 个tokens.txt文件, {tokens_exist_count} 个存在数据, 生成的文件保存在{result_path}')
 
