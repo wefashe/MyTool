@@ -27,6 +27,9 @@ while True:
     if not os.path.exists(work_path):
         print(f'文件路径不存在 -> {work_path}')
         continue
+    if not os.path.isabs(work_path):
+        print(f'不是绝对文件路径 -> {work_path}')
+        continue
     break
 
 work_path_name = os.path.join(glob.escape(work_path), "**",'[cCtT]o[nk][fe][in][gs].[tv][xd][tf]')
