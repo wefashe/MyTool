@@ -16,16 +16,17 @@ work_path = r'C:\Users\wenfs39551\Desktop\MyTool\demo'
 work_path_name = os.path.join(glob.escape(work_path), "**",'[cCtT]o[nk][fe][in][gs].[tv][xd][tf]')
 files_iterator  = glob.iglob( work_path_name, recursive=True)
 
-root_path = os.getcwd()
-
-config_666_path = os.path.join(root_path, "config_666.txt")
+result_path = os.path.join(os.getcwd(), 'result')
+if not os.path.exists(result_path):
+    os.makedirs(result_path)
+config_666_path = os.path.join(result_path, "config_666.txt")
 config_666_file = open(config_666_path, mode='a+', encoding="UTF-8")
-tokens_666_path = os.path.join(root_path, "tokens_666.txt")
+tokens_666_path = os.path.join(result_path, "tokens_666.txt")
 tokens_666_file = open(tokens_666_path, mode='a+', encoding="UTF-8")
 
-config_pos_path = os.path.join(root_path, "config_pos.txt")
+config_pos_path = os.path.join(result_path, "config_pos.txt")
 config_pos_file = open(config_pos_path, mode='a+', encoding="UTF-8")
-tokens_pos_path = os.path.join(root_path, "tokens_pos.txt")
+tokens_pos_path = os.path.join(result_path, "tokens_pos.txt")
 tokens_pos_file = open(tokens_pos_path, mode='a+', encoding="UTF-8")
 
 config_count = 0
@@ -71,8 +72,9 @@ for file_path in files_iterator:
     except Exception as e:
         failed_count += 1
         print(f'第 {config_count + tokens_count} 个文件提取失败-> {file_path}, 第 {e.__traceback__.tb_lineno} 行代码执行错误: {e}')
-print(f'共找到 {config_count + tokens_count} 个文件, {config_count} 个config.vdf文件, 其中 {config_exist_count} 个存在数据, \
-{tokens_count} 个tokens.txt文件, 其中 {tokens_exist_count} 个存在数据')
+print(f'共找到 {config_count + tokens_count} 个文件, {config_count} 个config.vdf文件, {config_exist_count} 个存在数据, \
+{tokens_count} 个tokens.txt文件, {tokens_exist_count} 个存在数据, 生成的文件保存在{result_path}')
+
 tokens_pos_file.close()
 tokens_666_file.close()
 config_pos_file.close()
