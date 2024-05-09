@@ -77,7 +77,7 @@ with open(config_666_path, mode=mode, encoding="UTF-8") as config_666_file, \
                 rel_path = os.path.basename(work_path)
                 if parent_path != work_path:
                     rel_path = os.path.relpath(parent_path, work_path)
-                matches = re.findall('eyAi([^\s]\S+)', context, re.DOTALL)
+                matches = re.findall('eyAi\S+', context, re.DOTALL)
                 size =  len(matches) 
                 if size > 0:
                     if 'config.vdf' == file_name.lower(): config_exist_count += 1
