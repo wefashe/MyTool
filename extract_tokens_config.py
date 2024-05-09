@@ -9,7 +9,6 @@ pyinstaller -F extract_email.py
 import os
 import re
 import glob
-from pathlib import Path
 
 work_path = r'C:\Users\wenfs39551\Desktop\MyTool\demo'
 
@@ -30,7 +29,10 @@ tokens_pos_path = os.path.join(root_path, "tokens_pos.txt")
 tokens_pos_file = open(tokens_pos_path, mode='a+', encoding="UTF-8")
 
 config_count = 0
+config_exist_count = 0
 tokens_count = 0
+tokens_exist_count = 0
+failed_count = 0
 for file_path in files_iterator:
     file_name = os.path.basename(file_path)
     if 'config.vdf' != file_name.lower() and 'tokens.txt' != file_name.lower():
@@ -47,24 +49,32 @@ for file_path in files_iterator:
                 config_count += 1
                 matches = re.findall('\"eyAi([^\"]\S+)\"', context, re.DOTALL)
                 size =  len(matches) 
-                if size == 0: continue
                 for matche in matches:
                     text = matche.strip('"').strip('\n')+ '\n'
                     config_666_file.write(f'666----{text}')   
                     config_666_file.flush()
                     config_pos_file.write(f'{rel_path}----{text}')   
                     config_pos_file.flush()
+                if size > 0 : config_exist_count += 1
             if 'tokens.txt' == file_name.lower():
                 tokens_count += 1
                 matches = re.findall('\seyAi([^\s]\S+)\s', context, re.DOTALL)
                 size =  len(matches) 
-                if size == 0: continue
                 for matche in matches:
                     text = matche.strip(' ').strip('\n')+ '\n'
                     tokens_666_file.write(f'666----{text}')   
                     tokens_666_file.flush()
                     tokens_pos_file.write(f'{rel_path}----{text}')   
                     tokens_pos_file.flush()
+                if size > 0 : tokens_exist_count += 1
         print(f'第 {config_count + tokens_count} 个文件提取到 {size} 个-> {file_path}')
     except Exception as e:
+        failed_count += 1
         print(f'第 {config_count + tokens_count} 个文件提取失败-> {file_path}, 第 {e.__traceback__.tb_lineno} 行代码执行错误: {e}')
+print(f'共找到 {config_count + tokens_count} 个文件, {config_count} 个config.vdf文件, 其中 {config_exist_count} 个存在数据, \
+{tokens_count} 个tokens.txt文件, 其中 {tokens_exist_count} 个存在数据')
+tokens_pos_file.close()
+tokens_666_file.close()
+config_pos_file.close()
+config_666_file.close()
+os.system('pause')
