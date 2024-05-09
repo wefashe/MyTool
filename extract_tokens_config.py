@@ -2,8 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 '''
-提取文件夹里所有带password的txt文件, 提取里面是邮箱的账户名和密码
-pyinstaller -F extract_email.py
+打包命令
+pyinstaller -F extract_tokens_config.py
 '''
 
 import os
