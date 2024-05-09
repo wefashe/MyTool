@@ -69,7 +69,6 @@ with open(config_666_path, mode=mode, encoding="UTF-8") as config_666_file, \
         try:
             with open(file_path, mode='r', encoding="UTF-8", errors='ignore') as file:
                 context = file.read()
-                if not context and not context.strip(): continue
                 parent_path = os.path.dirname(file_path)
                 rel_path = os.path.basename(work_path)
                 if parent_path != work_path:
