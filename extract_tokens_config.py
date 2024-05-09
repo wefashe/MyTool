@@ -67,34 +67,31 @@ with open(config_666_path, mode=mode, encoding="UTF-8") as config_666_file, \
         if 'config.vdf' != file_name.lower() and 'tokens.txt' != file_name.lower():
             continue
         try:
+            if 'config.vdf' == file_name.lower(): config_count += 1
+            if 'tokens.txt' == file_name.lower(): tokens_count += 1
             with open(file_path, mode='r', encoding="UTF-8", errors='ignore') as file:
                 context = file.read()
                 parent_path = os.path.dirname(file_path)
                 rel_path = os.path.basename(work_path)
                 if parent_path != work_path:
                     rel_path = os.path.relpath(parent_path, work_path)
-                if 'config.vdf' == file_name.lower():
-                    config_count += 1
-                    matches = re.findall('\"eyAi([^\"]\S+)\"', context, re.DOTALL)
-                    size =  len(matches) 
-                    for matche in matches:
-                        text = matche.strip('"').strip('\n')+ '\n'
+                matches = re.findall('eyAi([^\s]\S+)', context, re.DOTALL)
+                size =  len(matches) 
+                if size > 0:
+                    if 'config.vdf' == file_name.lower(): config_exist_count += 1
+                    if 'tokens.txt' == file_name.lower(): tokens_exist_count += 1                    
+                for matche in matches:
+                    text = matche.strip('"').strip('\n').strip()+ '\n'
+                    if 'config.vdf' == file_name.lower():
                         config_666_file.write(f'666----{text}')   
                         config_666_file.flush()
                         config_pos_file.write(f'{rel_path}----{text}')   
                         config_pos_file.flush()
-                    if size > 0 : config_exist_count += 1
-                if 'tokens.txt' == file_name.lower():
-                    tokens_count += 1
-                    matches = re.findall('\seyAi([^\s]\S+)\s', context, re.DOTALL)
-                    size =  len(matches) 
-                    for matche in matches:
-                        text = matche.strip(' ').strip('\n')+ '\n'
+                    if 'tokens.txt' == file_name.lower():
                         tokens_666_file.write(f'666----{text}')   
                         tokens_666_file.flush()
                         tokens_pos_file.write(f'{rel_path}----{text}')   
                         tokens_pos_file.flush()
-                    if size > 0 : tokens_exist_count += 1
             print(f'第 {config_count + tokens_count} 个文件提取到 {size} 条数据-> {file_path}')
         except Exception as e:
             failed_count += 1
