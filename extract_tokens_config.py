@@ -13,7 +13,7 @@ import time
 
 while True:
     try:
-        work_path = input('请输入要处理的文件夹: ').strip('"').strip('&').strip("'").strip()
+        work_path = input('请输入要处理的文件夹: ').strip('"').strip('&').strip().strip("'").strip()
     except KeyboardInterrupt:
         # 键盘中断操作，防止报错
         exit_choose = input("\n您真的要退出吗?(y/n): ")
@@ -68,7 +68,7 @@ with open(config_666_path, mode=mode, encoding="UTF-8") as config_666_file, \
                 context = file.read()
                 if not context and not context.strip(): continue
                 parent_path = os.path.dirname(file_path)
-                rel_path = work_path
+                rel_path = os.path.basename(work_path)
                 if parent_path != work_path:
                     rel_path = os.path.relpath(parent_path, work_path)
                 if 'config.vdf' == file_name.lower():
