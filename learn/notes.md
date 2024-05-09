@@ -12,3 +12,18 @@ python -m http.server
 ```
 '{"job": "developer", "name": "lmx", "sex": "male"}' | python -m json.tool
 ```
+
+- 快速实现 FTP 服务器
+首先安装 Pyftpdlib 模块
+```
+ pip install pyftpdlib
+```
+只要对应目录下执行一下命令，就可以共享该目录了 `ftp://127.0.0.1:2121`
+```
+python -m pyftpdlib
+```
+
+复杂点
+```
+python -m pyftpdlib -i IP地址 -p 端口 -w -d /root/docs/ -u 用户名 -P 密码
+```
