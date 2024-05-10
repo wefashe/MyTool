@@ -23,12 +23,12 @@ def get_result(prompt):
     url = "https://api.binjie.fun/api/generateStream"
 
     data = {
-        "prompt": "{}".format(prompt),
-        "userId": "#/chat/1683173371474",
-        "network": True,
-        "system": "",
-        "apikey":"",
+        "prompt": "{}".format(prompt),    # 必需 提示词
+        "userId": "", # 可选 用户id 每次聊天唯一的id， 用于记录会话上下文，不传就可以不添加上下文节省token （传这个token翻倍加，请慎重）
+        "network": True, # 必须 
+        "system": "你是机器人,名字叫小智", # 必须 系统级提示词  你是机器人,名字叫小智
         "withoutContext": True,
+        # "apikey": '',
         "stream": True
     }
     data = json.dumps(data, separators=(',', ':'))
