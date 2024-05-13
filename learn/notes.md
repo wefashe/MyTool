@@ -27,3 +27,8 @@ python -m pyftpdlib
 ```
 python -m pyftpdlib -i IP地址 -p 端口 -w -d /root/docs/ -u 用户名 -P 密码
 ```
+
+- 正则删除空行 
+```
+ ^\s*\n 替换为空字符串即可
+```
