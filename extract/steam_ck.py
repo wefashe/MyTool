@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 import base64
 from bs4 import BeautifulSoup
 
@@ -10,6 +11,14 @@ if len(encodestr) % 4:
 decodestr = base64.b64decode(encodestr, validate=True)
 obj = json.loads(decodestr)
 print(json.dumps(obj, ensure_ascii=False, indent=2))
+# iss: jwt签发者
+# sub: jwt所面向的用户
+# aud: 接收jwt的一方
+# exp: jwt的过期时间，这个过期时间必须要大于签发时间
+# nbf: 定义在什么时间之前，该jwt都是不可用的.
+# iat: jwt的签发时间
+# jti: jwt的唯一身份标识，主要用来作为一次性token。
+print('过期时间：', time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(obj["exp"])))
 header = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'Accept-Encoding': 'gzip, deflate, br',
