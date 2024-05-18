@@ -1,16 +1,22 @@
+import re
 import requests
 import json
 import time
 import base64
 from bs4 import BeautifulSoup
 
+url = 'https://help.steampowered.com'
+
+host = re.findall(r'^(?:https?:\/\/)?([^\/]+)', url)[0]
+
 ck = 'eyAidHlwIjogIkpXVCIsICJhbGciOiAiRWREU0EiIH0.eyAiaXNzIjogInI6MEVGMl8yNDM2MjkyOV9CNEFGRiIsICJzdWIiOiAiNzY1NjExOTkwMTIzODIwNzQiLCAiYXVkIjogWyAiY2xpZW50IiwgIndlYiIgXSwgImV4cCI6IDE3MTYwMTA1MTYsICJuYmYiOiAxNzA3MjgzNDMzLCAiaWF0IjogMTcxNTkyMzQzMywgImp0aSI6ICIxODA1XzI0NkVERDhBXzg5NTVBIiwgIm9hdCI6IDE3MTI0OTg3ODAsICJydF9leHAiOiAxNzMwNjIyNTM2LCAicGVyIjogMCwgImlwX3N1YmplY3QiOiAiMTg5LjEwNy4yMS41OSIsICJpcF9jb25maXJtZXIiOiAiMTg5LjEwNy4yMS41OSIgfQ.toPmNGeTtidvFbKPdGb2RDwSnBxZKCKJGny5QO0Za7OszFhR_tbWN4x6iq6_w9dOjoVty5R0HqN7IlEaDFDBAA'
 encodestr = ck.split('.')[1]
+# base64字符串个数必须是4的倍数，不够后面补=号
 if len(encodestr) % 4:
     encodestr += '=' * (4 - len(encodestr) % 4)
 decodestr = base64.b64decode(encodestr, validate=True)
 obj = json.loads(decodestr)
-print(json.dumps(obj, ensure_ascii=False, indent=2))
+# print(json.dumps(obj, ensure_ascii=False, indent=2))
 # iss: jwt签发者
 # sub: jwt所面向的用户
 # aud: 接收jwt的一方
@@ -18,18 +24,18 @@ print(json.dumps(obj, ensure_ascii=False, indent=2))
 # nbf: 定义在什么时间之前，该jwt都是不可用的.
 # iat: jwt的签发时间
 # jti: jwt的唯一身份标识，主要用来作为一次性token。
-print('过期时间：', time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(obj["exp"])))
-header = {
+print('cookie生效时间:', time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(obj["iat"])))
+print('cookie过期时间:', time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(obj["exp"])))
+headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'zh-CN,zh;q=0.9',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
-    'Cookie': f'steamLoginSecure={obj["sub"]}%7C%7C{ck}',
     'DNT': '1',
-    'Host': 'store.steampowered.com',
+    'Host': host,
     'Pragma': 'no-cache',
-    'Referer': 'https://store.steampowered.com/steamaccount/addfunds/',
+    'Referer': 'https://store.steampowered.com/',
     'Sec-Fetch-Dest': 'document',
     'Sec-Fetch-Mode': 'navigate',
     'Sec-Fetch-Site': 'same-origin',
@@ -41,7 +47,16 @@ header = {
     'sec-ch-ua-platform': '"Windows"'
 }
 
-resp = requests.get('https://store.steampowered.com/account/', headers=header)
+cookies = {
+    'steamLoginSecure': f'{obj["sub"]}%7C%7C{ck}'
+}
+
+resp = requests.get(url, headers=headers, cookies=cookies)
+
+cookies = resp.cookies
+for cookie in cookies:
+    print(f"Name: {cookie.name}, Value: {cookie.value}")
+
 soup = BeautifulSoup(resp.text, 'html.parser')
 menu = soup.find('div', id='global_action_menu')
 name = menu.find('span', id='account_pulldown').get_text().strip()
