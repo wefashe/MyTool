@@ -5,6 +5,8 @@ import pickle
 import asyncio
 import websockets
 
+# 获取 CM (Connection Manager) 服务器列表 用于 Steam 帐户登录认证、好友在线状态、聊天和游戏邀请等等方面 
+# cellid 地区相关id， format 格式, vdf js xml
 url = 'https://api.steampowered.com/ISteamDirectory/GetCMListForConnect/v0001/?cellid=0&format=js'
 headers = {
     'user-agent': 'Valve/Steam HTTP Client 1.0',
