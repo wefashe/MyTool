@@ -42,11 +42,7 @@ async def main(cm):
         response = await websocket.recv()
         if type(response) == 'bytes':
             print(f'Received unexpected frame type from {cm["endpoint"]}: {type(response)}')
-        
-        raw_emsg = int.from_bytes(response[0:4], byteorder='little')
-        hdr_length = int.from_bytes(response[4:8], byteorder='little')
-        hdr_buf = response[8:8 + hdr_length]
-        msg_body = response[8 + hdr_length:]
-        print(f"Received: {hdr_buf} {msg_body}")
+        print(f"Received: {response}")
 
 asyncio.get_event_loop().run_until_complete(main(cm))
+
