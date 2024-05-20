@@ -35,8 +35,6 @@ refresh_token_data = {
     'ip_confirmer': myip
 }
 
-print(refresh_token_data)
-
 guard_data = {
     **refresh_token_data,
     'iss': f"r:{refresh_token_data['jti']}",
@@ -45,8 +43,6 @@ guard_data = {
     'rt_exp': refresh_token_data['exp'],
     'per': 0
 };
-
-print(guard_data)
 
 # 定义urlSafeBase64函数
 def url_safe_base64(input):
@@ -67,5 +63,9 @@ def encode_jwt(body):
 
     return result
 
-print(encode_jwt(refresh_token_data))
-print(encode_jwt(guard_data))
+print('refreshToken: ', encode_jwt(refresh_token_data))
+print('guardData: ', encode_jwt(guard_data))
+
+
+session_client_id = str(int.from_bytes(os.urandom(8), byteorder='big', signed=False))
+print(session_client_id)
