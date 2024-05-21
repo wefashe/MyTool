@@ -1,4 +1,3 @@
-
 import json
 import random
 import requests
@@ -10,7 +9,7 @@ import steammessages_base_pb2 as steammessages__base__pb2
 
 def get_cm_server(): # 随机获取服务器信息
     global cmList 
-    if 'cmList' not in locals() or len(cmList) == 0:
+    if 'cmList' not in globals() or len(cmList) == 0:
         # 获取 CM (Connection Manager) 服务器列表 用于 Steam 帐户登录认证、好友在线状态、聊天和游戏邀请等等方面 
         # cellid 地区相关id， format 格式, vdf js xml
         # https://api.steampowered.com/ISteamDirectory/GetCMList/v0001/?cellid=0&format=js
@@ -50,13 +49,13 @@ def get_cm_server(): # 随机获取服务器信息
             cmList = sorted(cmList, key=lambda x: x["wtd_load"])
             # print(json.dumps(cmList, ensure_ascii=False, indent=2))
         except requests.exceptions.ConnectionError as e:
-            print('网络连接异常: ', e)
+            raise ValueError('网络连接异常: ', e)
         except requests.exceptions.Timeout as e:
-            print('连接超时: ', e)
+            raise ValueError('连接超时: ', e)
         except requests.exceptions.RequestException as e:
-            print('请求异常: ', e)
+            raise ValueError('请求异常: ', e)
         except requests.exceptions.HTTPError as e:
-            print(f'HTTP错误, 状态码: {e.response.status_code}, {e}')
+            raise ValueError(f'HTTP错误, 状态码: {e.response.status_code}, {e}')
         except ValueError as e:
             print('响应解析异常: ', e)
     return cmList[random.randint(0, min(20, len(cmList)) - 1)]
@@ -86,7 +85,7 @@ CLIENT_LOG_ON_RESPONSE = 751
 client_session_id = 0
 jobs = []
 
-async def send_message(ws, msg_type, body):
+async def send_message(ws, msg_type, body, target_job_name):
     msg_proto_buf_header = {
         'steamid': '0',
         'client_sessionid':  client_session_id if msg_type != SERVICE_METHOD_CALL_FROM_CLIENT_NON_AUTHED else 0
@@ -143,7 +142,13 @@ async def main():
                         'protocol_version': PROTOCOL_VERSION
                     }
                     encoded_msg_client_hello = encode( steammessages__clientserver__login__pb2.CMsgClientHello(), msg_client_hello)
-                    send_result = await send_message(websocket, CLIENT_HELLO, encoded_msg_client_hello)
+
+                    targetName = 'Authentication.GetAuthSessionInfo#1';
+                    # CAuthentication_GetAuthSessionInfo_Request
+                    # CAuthentication_GetAuthSessionInfo_Response
+                    encoded_msg_client_hello = encode( steammessages__clientserver__login__pb2.CMsgClientHello(), msg_client_hello)
+                    
+                    send_result = await send_message(websocket, CLIENT_HELLO, encoded_msg_client_hello, targetName)
                     asyncio.create_task(ping(websocket))
                     timeout = 1000
                     while True: 
