@@ -4,8 +4,9 @@ import requests
 import asyncio
 import websockets
 from google.protobuf import json_format
-import steammessages_clientserver_login_pb2 as steammessages__clientserver__login__pb2
-import steammessages_base_pb2 as steammessages__base__pb2
+import steammessages_clientserver_login_pb2
+import steammessages_base_pb2
+import steammessages_auth_pb2
 
 def get_cm_server(): # 随机获取服务器信息
     global cmList 
@@ -92,7 +93,7 @@ async def send_message(ws, msg_type, body, target_job_name):
     }
     if msg_type == SERVICE_METHOD_CALL_FROM_CLIENT_NON_AUTHED:
         pass
-    encoded_msg_proto_buf_header = encode(steammessages__base__pb2.CMsgProtoBufHeader(), msg_proto_buf_header)
+    encoded_msg_proto_buf_header = encode(steammessages_base_pb2.CMsgProtoBufHeader(), msg_proto_buf_header)
     header = bytearray(8)
     header[:4] = (msg_type | PROTO_MASK).to_bytes(4, byteorder='little', signed=False)
     header[4:] = len(encoded_msg_proto_buf_header).to_bytes(4, byteorder='little', signed=False)
@@ -108,7 +109,7 @@ async def handle_message(body):
     msgBody = body[8+hdrLength:]
     if not rawEmsg & PROTO_MASK:
         raise ValueError(f"Received unexpected non-protobuf message {rawEmsg}")
-    msg_proto_buf_header = decode( steammessages__base__pb2.CMsgProtoBufHeader(), hdrBuf)
+    msg_proto_buf_header = decode( steammessages_base_pb2.CMsgProtoBufHeader(), hdrBuf)
     print('msg_proto_buf_header: ', msg_proto_buf_header)
     global client_session_id 
     if msg_proto_buf_header['clientSessionid'] and msg_proto_buf_header['clientSessionid'] != client_session_id:
@@ -121,7 +122,7 @@ async def handle_message(body):
     if msg_proto_buf_header.get('jobid_target') and jobs[msg_proto_buf_header.get('jobid_target')]:
         pass
     if eMsg == CLIENT_LOG_ON_RESPONSE: # 751时 换服务器
-        log_on_response = decode( steammessages__clientserver__login__pb2.CMsgClientLogonResponse(), msgBody)
+        log_on_response = decode( steammessages_clientserver_login_pb2.CMsgClientLogonResponse(), msgBody)
         print(f'Received ClientLogOnResponse with result: {log_on_response.get("eresult")}')
         return False
     elif eMsg == Multi:
@@ -141,12 +142,11 @@ async def main():
                     msg_client_hello = {
                         'protocol_version': PROTOCOL_VERSION
                     }
-                    encoded_msg_client_hello = encode( steammessages__clientserver__login__pb2.CMsgClientHello(), msg_client_hello)
+                    encoded_msg_client_hello = encode( steammessages_clientserver_login_pb2.CMsgClientHello(), msg_client_hello)
 
                     targetName = 'Authentication.GetAuthSessionInfo#1';
-                    # CAuthentication_GetAuthSessionInfo_Request
-                    # CAuthentication_GetAuthSessionInfo_Response
-                    encoded_msg_client_hello = encode( steammessages__clientserver__login__pb2.CMsgClientHello(), msg_client_hello)
+                    # steammessages_auth_pb2.CAuthentication_GetAuthSessionInfo_Request()
+                    # steammessages_auth_pb2.CAuthentication_GetAuthSessionInfo_Response()
                     
                     send_result = await send_message(websocket, CLIENT_HELLO, encoded_msg_client_hello, targetName)
                     asyncio.create_task(ping(websocket))
