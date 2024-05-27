@@ -1,9 +1,14 @@
+import os
+from tkinter import messagebox
+
+
+
+
 import tkinter as tk
 import base64
 import threading
 import json
 import time
-from tkinter import messagebox
 from tkinter import ttk
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service as EdgeService
@@ -35,8 +40,18 @@ tree.heading("name", text="帐户" , anchor='w')
 tree.heading("steamid", text="STEAM ID" , anchor='w')
 tree.heading("state", text="状态" , anchor='w')
 tree.heading("cookie", text="COOKIE", anchor='w')
+
+win.withdraw()
+
+path =os.path.join(os.path.dirname(__file__) , 'cookie.txt')
+if not os.path.exists(path):
+    messagebox.showwarning("提示", f"{path} 文件不存在!")
+    exit()
+
+win.deiconify() 
+
 # 读取cookies
-with open(f'extract/test.txt', mode='r', encoding="UTF-8") as file:
+with open(path, mode='r', encoding="UTF-8") as file:
     for line in file:
         array = line.strip().split('----')
         cookie = array[1].split("=")[1]
