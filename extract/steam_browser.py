@@ -1,5 +1,6 @@
 import tkinter as tk
 import base64
+import threading
 import json
 import time
 from tkinter import messagebox
@@ -75,8 +76,7 @@ def doubleClick(event):
     driver.add_cookie({"name": 'steamLoginSecure', "value": values[len(values) - 1]})
     driver.get("https://store.steampowered.com/account")
     # driver.refresh() 不一定一直这个页面
-
-tree.bind('<Double-1>', doubleClick)
+tree.bind('<Double-1>', lambda event: threading.Thread(target=doubleClick,args=(event,)).start())
 
 win.mainloop() 
 
