@@ -90,7 +90,7 @@ async def rece_message(message):
         pass
     else:
         print(f'Received unexpected message: {eMsg}')
-        steammessages_auth_pb2._CAUTHENTICATION_ACCESSTOKEN_GENERATEFORAPP_RESPONSE()
+        # steammessages_auth_pb2._CAUTHENTICATION_ACCESSTOKEN_GENERATEFORAPP_RESPONSE()
 
 async def ws():
     async with websockets.connect(f'wss://ext4-hkg1.steamserver.net:27024/cmsocket/') as websocket:
