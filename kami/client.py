@@ -125,6 +125,8 @@ def check_input(*args):
 win = tk.Tk()
 # win.geometry("600x250")
 win.title('卡密测试 ' + str(tk.TkVersion))
+# 去掉窗口最大化最小化按钮，只保留关闭
+win.attributes("-toolwindow", 2) 
 win.resizable(False, False)
 show_kami = ttk.Label(win, text='机器码: ')
 show_kami.grid(row=0, column=0, padx=5, pady=5)
@@ -135,7 +137,7 @@ mac_address = get_mac_address()
 machine_code = hash_msg(mac_address)
 input_kami.insert(0, machine_code)
 input_kami.config(state='readonly')
-input_kami.grid(row=0, column=1, padx=5, pady=5)
+input_kami.grid(row=0, column=1, padx=(0, 20), pady=5)
 # 绑定双击事件到复制功能
 input_kami.bind("<Double-1>", copy_to_clipboard)
 
@@ -144,10 +146,10 @@ entry_var = tk.StringVar()
 entry_var.trace_add('write', check_input)
 # 创建并设置卡密输入框
 card_code_label = tk.Label(win, text="卡 密: ")
-card_code_label.grid(row=1, column=0, padx=5, pady=10)
+card_code_label.grid(row=1, column=0, padx=5, pady=5)
 
 card_code_entry = tk.Entry(win, width=34, textvariable=entry_var)
-card_code_entry.grid(row=1, column=1, padx=10, pady=10)
+card_code_entry.grid(row=1, column=1, padx=(0, 20), pady=5)
 
 # 创建登录按钮
 login_button = ttk.Button(win, text="登录", command=login,width=30, state=tk.DISABLED)
@@ -155,7 +157,7 @@ login_button.grid(row=2, columnspan=2, padx=5, pady=5)
 
 # 创建状态标签
 status_label = tk.Label(win)
-status_label.grid(row=3, columnspan=2, padx=5, pady=10)
+status_label.grid(row=3, columnspan=2, padx=5, pady=5)
 
 win.mainloop()
     
