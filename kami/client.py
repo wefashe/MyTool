@@ -82,7 +82,7 @@ def start_countdown(count):
         status_label.config(text="卡密已到期", fg="red")
 
 def login():
-    msg_text = card_code_entry.get()
+    msg_text = card_code_entry.get().strip()
     BLOCK_SIZE = AES.block_size # 16的倍数
     # key长度必须是16, 24, 32
     key = '9876543219876543'
