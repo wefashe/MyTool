@@ -11,6 +11,8 @@ from tkinter import messagebox
 import tkinter as tk
 from tkinter import ttk
 
+# pyinstaller -F client.py -w
+
 def get_beijin_time():
     try:
         response = ntplib.NTPClient().request('ntp.aliyun.com')
@@ -112,6 +114,7 @@ def login():
     seconds = date.seconds +  date.days * 24 * 60 * 60
     start_countdown(seconds)
     status_label.config(text="登录成功", fg="green")
+    login_button.config(state=tk.DISABLED)       
 
 def check_input(*args):
     # 获取输入框的值并去除两端的空格
