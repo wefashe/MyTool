@@ -6,10 +6,9 @@ import base64
 from datetime import datetime, timedelta
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
-from tkinter import messagebox
-
 import tkinter as tk
 from tkinter import ttk
+import traceback
 
 # pyinstaller -F client.py -w
 
@@ -95,7 +94,7 @@ def login():
         license_str = base64.b64decode(decrypted_msg)
         license_dict = eval(license_str)
     except Exception as e:
-        print(e)
+        traceback.print_exc(file = open('error.log', 'a+'))
         status_label.config(text="卡密不正确", fg="red")
         return
     print(license_dict)
