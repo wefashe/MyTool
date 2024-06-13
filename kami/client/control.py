@@ -118,8 +118,8 @@ class Control:
             cipher = AES.new(key.encode('utf8'), AES.MODE_ECB)
             cipher_decrypt = cipher.decrypt(encrypted_msg_bytes)
             decrypted_msg = unpad(cipher_decrypt, BLOCK_SIZE)
-            license_str = base64.b64decode(decrypted_msg)
-            license_dict = eval(license_str)
+            decoded_bytes = base64.b64decode(decrypted_msg)
+            license_dict = eval(decoded_bytes.decode('utf-8'))
         except Exception as e:
             traceback.print_exc(file = open('error.log', 'a+'))
             showinfo(title="提示", message="注册码错误")
