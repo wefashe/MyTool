@@ -10,6 +10,8 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import tkinter as tk
+from tkinter import ttk
 
 def get_mac_address():
     mac = uuid.UUID(int=uuid.getnode()).hex[-12:]
@@ -61,19 +63,19 @@ license_dict['iss'] = machine_code
 unique_17_number = generate_unique_17_number()
 license_dict['sub'] = unique_17_number
 
-exp_time = get_exp_time(years=0,days=0, hours=0, minutes=1, seconds=0)
+exp_time = get_exp_time(years=1,days=0, hours=0, minutes=0, seconds=0)
 license_dict['exp'] = datetime.timestamp(exp_time)
 iat_time = get_beijin_time()
 license_dict['iat'] = datetime.timestamp(iat_time)
 
-target_machine_code = '6BB85C7403A653DDC68F2DC0353CD32B'
+target_machine_code = '40D766D7826B5F1ED111643FCD2DDA2F'
 license_dict['psw'] = target_machine_code
 license_dict['jti'] =generate_jti()
 
 license_str = str(license_dict)
-print(license_str)
+# print(license_str)
 license_text = base64.b64encode(license_str.encode('utf-8'))
-print(license_text.decode('utf-8'))
+# print(license_text.decode('utf-8'))
 
 # 对加密数据进行补位
 BLOCK_SIZE = AES.block_size # 16的倍数
@@ -84,5 +86,12 @@ cipher = AES.new(key.encode('utf8'), AES.MODE_ECB)
 encrypted_msg = cipher.encrypt(pad(license_text, BLOCK_SIZE))
 msg_text = encrypted_msg.hex().upper()
 print('卡密：',msg_text)
+
+
+win = tk.Tk()
+win.title('经典注册机')
+
+
+win.mainloop()
 
 
