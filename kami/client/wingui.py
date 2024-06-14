@@ -75,9 +75,11 @@ class Win(Tk):
         self.mainloop()
 
 class WinGUI(Win):
-
+    
     def __init__(self, control):
-        self.ctl = control
+        from control import Control
+        
+        self.ctl:Control = control
         super().__init__()
         self.__event_bind()
         self.ctl.init(self)

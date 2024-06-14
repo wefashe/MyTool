@@ -11,15 +11,12 @@ import winreg
 import hashlib
 import traceback
 import tkinter as tk
-from wingui import WinGUI
 from tkinter.messagebox import showinfo
 from datetime import datetime
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
 class Control:
-
-    win: WinGUI
 
     def __init__(self):
         pass
@@ -28,7 +25,9 @@ class Control:
         """
         窗口初始化
         """
-        self.win = win
+        from wingui import WinGUI
+        
+        self.win:WinGUI = win
         # 操作注册表需要赋予完全访问权限
 
         # self.add_winreg_key(sub_key_name)
