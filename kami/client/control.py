@@ -10,7 +10,6 @@ import ntplib
 import winreg
 import hashlib
 import traceback
-import tkinter as tk
 from tkinter.messagebox import showinfo
 from datetime import datetime
 from Crypto.Cipher import AES
@@ -73,6 +72,7 @@ class Control:
         return msg.upper()
     def check_button_register_code(self, *args):
         var_register_code = self.win.tk_var_register_code.get().strip()
+        import tkinter as tk
         if var_register_code:
             self.win.tk_button_register_code.config(state=tk.NORMAL)
         else:

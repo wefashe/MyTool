@@ -8,6 +8,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from tkcalendar import DateEntry
+from datetime import datetime,timedelta
 
 class Win(Tk):
     def __init__(self):
@@ -23,7 +24,7 @@ class Win(Tk):
        
         self.__tk_checkbox_machine(self)
         self.__tk_checkbox_expire(self)
-        self.__tk_radio_expire(self)
+        self.tk_var_radio_expire,self.tk_datetime_expire = self.__tk_radio_expire(self)
         self.__tk_button_create_register_code(self)
 
     def __win(self):
@@ -97,7 +98,7 @@ class Win(Tk):
         radioquarter.place(x=255, y=110, width=35, height=30)
         radioDate.place(x=290, y=110, width=20, height=30)
         dateentry.place(x=310, y=110, width=95, height=30)
-        return radioweek,radiomonth,radioquarter
+        return intvar, dateentry
 
     def __tk_button_create_register_code(self, parent, x_pos = 20, y_pos = 20):
         button = Button(parent, text="生成", takefocus=False)
@@ -114,7 +115,9 @@ class Win(Tk):
 class WinGUI(Win):
 
     def __init__(self, control):
-        self.ctl = control
+        from control import Control
+        
+        self.ctl:Control = control
         super().__init__()
         self.__event_bind()
         self.ctl.init(self)
@@ -123,9 +126,10 @@ class WinGUI(Win):
         """
         事件绑定
         """
-        # self.tk_var_register_code.trace_add('write', self.ctl.check_button_register_code)
+        self.tk_var_radio_expire.trace_add('write', self.ctl.check_radio_expire)
         # self.tk_button_machine_code.bind('<Button-1>',lambda event: self.ctl.copy_to_clipboard(event, self.tk_input_machine_code))
         # self.tk_button_register_code.bind('<Button-1>', self.ctl.login)
+
 
 if __name__ == "__main__":
     win = Win()
