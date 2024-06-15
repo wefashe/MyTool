@@ -63,12 +63,12 @@ license_dict['iss'] = machine_code
 unique_17_number = generate_unique_17_number()
 license_dict['sub'] = unique_17_number
 
-exp_time = get_exp_time(years=1,days=0, hours=0, minutes=0, seconds=0)
+exp_time = get_exp_time(years=0,days=0, hours=1, minutes=0, seconds=0)
 license_dict['exp'] = datetime.timestamp(exp_time)
 iat_time = get_beijin_time()
 license_dict['iat'] = datetime.timestamp(iat_time)
 
-target_machine_code = '40D766D7826B5F1ED111643FCD2DDA2F'
+target_machine_code = 'F2510763602D8BCCC069A2AE808EF63F'
 license_dict['psw'] = target_machine_code
 license_dict['jti'] =generate_jti()
 
@@ -95,3 +95,34 @@ win.title('经典注册机')
 win.mainloop()
 
 
+# 1F9282646F93227D3D504982F1FB3275215BE20AD42A8025437D3DBCD5FA3AADE806F4CEE70DFB85188D2ED0C5B6E1BB5785C1D90AE75FE9F795635A94FD5C4DDB1A8B3E7B3084BA046943410692A4C46C30216EFB74D4B433E3A6ABA103AD99BEED4AF5DEDE56C94CDD2FD7E5323B7EA23F0A1AFC3D5371D3982388E437612E8D402E1B1A86D469EEB7061E2C2565D47684BFFE1474ADDE68A9D9442565BBE657A427278DA2AE30F8770E6E03691E08BE2917F2A61AF1885E03FD5D68484CB8CB2653E3682BF613782925EC97B6FE43EC8928191B6741021B999A742E15914DF04DF9264A8EC9AE51EFA2E131FA1636A2C580289E1B417F31FA5EB51840C7FB12F24B0E8999D258109B36658002F2E3
+
+# 1F9282646F93227D3D504982F1FB3275215BE20AD42A8025437D3DBCD5FA3AADE806F4CEE70DFB85188D2ED0C5B6E1BB5785C1D90AE75FE9F795635A94FD5C4DFC263E32BB4C2426596D260C7FC29B91797AF14B719DACC851DA9C0C30E5224157FE5F799F189532BF6A9210FD1CB416B4EA01C1052BA0F925CC12044C0D0C7E8D402E1B1A86D469EEB7061E2C2565D4758D576AF9C43C3ACCA5147B6FF29324AB312E48AEF8B09CAF7C1126947A10ECBE2917F2A61AF1885E03FD5D68484CB8CB2653E3682BF613782925EC97B6FE43EC8928191B6741021B999A742E15914DE29DE68696B917A58ADDD9CB0EE56618AFC58B379956E600F157292496318BFE5312429E8204700C6C4BC09742588402
+
+
+
+# license_str = (target_machine_code + str(int(datetime.timestamp(exp_time))))[::-1]
+# print('原文:', license_text.decode('utf-8'))
+# from Crypto.Random import get_random_bytes
+# key = get_random_bytes(16) 
+# # 生成一个随机的 IV
+# iv = get_random_bytes(AES.block_size)
+# # 创建 AES CFB 加密对象
+# cipher = AES.new(key, AES.MODE_CFB, iv)
+# # 执行加密操作
+# ciphertext = cipher.encrypt(license_text)
+# # 返回 IV 和密文
+# msg_text = key + iv + ciphertext
+
+# print('卡密：',msg_text.hex())
+
+# key =  msg_text[:16]
+#  # 提取 IV
+# iv = msg_text[16: 16 + AES.block_size]
+# # 提取实际密文
+# actual_ciphertext = msg_text[16 + AES.block_size:]
+# # 创建 AES CFB 解密对象
+# cipher = AES.new(key, AES.MODE_CFB, iv)
+# # 执行解密操作
+# msg_text = cipher.decrypt(actual_ciphertext)
+# print('原文:', msg_text.decode())
