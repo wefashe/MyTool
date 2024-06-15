@@ -14,7 +14,7 @@ class Win(Tk):
     def __init__(self):
         super().__init__()
         self.__win()
-        self.tk_input_machine_code,self.tk_var_machine_code,imc_x_pos,imc_y_pos = self.__tk_input_machine_code(self)
+        self.tk_label_machine_code, self.tk_input_machine_code,self.tk_var_machine_code,imc_x_pos,imc_y_pos = self.__tk_input_machine_code(self)
         self.tk_button_paste_machine_code,bmc_x_pos,bmc_y_pos = self.__tk_button_paste_machine_code(self,x_pos=imc_x_pos + 5)
         self.tk_input_register_code,self.tk_var_register_code,irc_x_pos,irc_y_pos = self.__tk_input_register_code(self, y_pos = 65)
         self.tk_button_copy_register_code,brc_x_pos,brc_y_pos = self.__tk_button_copy_register_code(self,x_pos=irc_x_pos + 5, y_pos = 65)
@@ -22,9 +22,9 @@ class Win(Tk):
         #    self.date_frame = ttk.LabelFrame(self, text="Select Date")
         # self.date_frame.pack(pady=10, padx=10, fill="x")
        
-        self.__tk_checkbox_machine(self)
-        self.__tk_checkbox_expire(self)
-        self.tk_var_radio_expire,self.tk_datetime_expire = self.__tk_radio_expire(self)
+        self.tk_checkbox_machine, self.tk_var_checkbox_machine = self.__tk_checkbox_machine(self)
+        self.tk_checkbox_expire, self.tk_var_checkbox_expire  = self.__tk_checkbox_expire(self)
+        self.tk_var_radio_expire,self.tk_radio_expire_week,self.tk_radio_expire_month,self.tk_radio_expire_quarter,self.tk_radio_expire_date, self.tk_datetime_expire_date = self.__tk_radio_expire(self)
         self.__tk_button_create_register_code(self)
 
     def __win(self):
@@ -46,7 +46,7 @@ class Win(Tk):
         height = 30
         label.place(x=x_pos, y=y_pos, width=label_width, height=height)
         entry.place(x=x_pos+label_width, y=y_pos, width=entry_width, height=height)
-        return entry, stringVar, x_pos + label_width + entry_width, y_pos+height
+        return label, entry, stringVar, x_pos + label_width + entry_width, y_pos+height
     
     def __tk_button_paste_machine_code(self, parent, x_pos = 20, y_pos = 20):
         button = Button(parent, text="粘贴", takefocus=False,)
@@ -67,7 +67,7 @@ class Win(Tk):
         return entry, stringVar, x_pos + label_width + entry_width, y_pos+height
 
     def __tk_button_copy_register_code(self, parent, x_pos = 20, y_pos = 20):
-        button = Button(parent, text="复制", takefocus=False, state=DISABLED)
+        button = Button(parent, text="复制", takefocus=False)
         button_width = 50
         button_height = 30
         button.place(x=x_pos, y=y_pos, width=button_width, height=button_height)
@@ -98,7 +98,7 @@ class Win(Tk):
         radioquarter.place(x=255, y=110, width=35, height=30)
         radioDate.place(x=290, y=110, width=20, height=30)
         dateentry.place(x=310, y=110, width=95, height=30)
-        return intvar, dateentry
+        return intvar,radioweek,radiomonth,radioquarter,radioDate,  dateentry
 
     def __tk_button_create_register_code(self, parent, x_pos = 20, y_pos = 20):
         button = Button(parent, text="生成", takefocus=False)
@@ -126,9 +126,13 @@ class WinGUI(Win):
         """
         事件绑定
         """
-        self.tk_var_radio_expire.trace_add('write', self.ctl.check_radio_expire)
+        self.tk_var_radio_expire.trace_add('write', self.ctl.check_radio_expire_date)
+        self.tk_var_checkbox_machine.trace_add('write', self.ctl.check_checkbox_machine)
+        self.tk_var_checkbox_expire.trace_add('write', self.ctl.check_checkbox_expire)
         # self.tk_button_machine_code.bind('<Button-1>',lambda event: self.ctl.copy_to_clipboard(event, self.tk_input_machine_code))
         # self.tk_button_register_code.bind('<Button-1>', self.ctl.login)
+        self.tk_var_register_code.trace_add('write', self.ctl.check_button_copy_register_code)
+
 
 
 if __name__ == "__main__":
