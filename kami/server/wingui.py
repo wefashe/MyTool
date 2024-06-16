@@ -29,7 +29,7 @@ class Win(Tk):
 
     def __win(self):
         self.title("经典注册机")
-        width, height = 500, 180
+        width, height = 500, 160
         screenwidth = self.winfo_screenwidth()
         screenheight = self.winfo_screenheight()
         geometry = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
