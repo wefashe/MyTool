@@ -25,7 +25,7 @@ class Win(Tk):
         self.tk_checkbox_machine, self.tk_var_checkbox_machine = self.__tk_checkbox_machine(self)
         self.tk_checkbox_expire, self.tk_var_checkbox_expire  = self.__tk_checkbox_expire(self)
         self.tk_var_radio_expire,self.tk_radio_expire_week,self.tk_radio_expire_month,self.tk_radio_expire_quarter,self.tk_radio_expire_date, self.tk_datetime_expire_date = self.__tk_radio_expire(self)
-        self.__tk_button_create_register_code(self)
+        self.tk_button_create_register_code = self.__tk_button_create_register_code(self)
 
     def __win(self):
         self.title("经典注册机")
@@ -107,7 +107,7 @@ class Win(Tk):
         button_width = 50
         button_height = 30
         button.place(x=x_pos, y=y_pos, width=button_width, height=button_height)
-        return button, x_pos+button_width, y_pos+button_height
+        return button
     
     def show(self):
         self.mainloop()
@@ -129,11 +129,10 @@ class WinGUI(Win):
         self.tk_var_radio_expire.trace_add('write', self.ctl.check_radio_expire_date)
         self.tk_var_checkbox_machine.trace_add('write', self.ctl.check_checkbox_machine)
         self.tk_var_checkbox_expire.trace_add('write', self.ctl.check_checkbox_expire)
-        # self.tk_button_machine_code.bind('<Button-1>',lambda event: self.ctl.copy_to_clipboard(event, self.tk_input_machine_code))
-        # self.tk_button_register_code.bind('<Button-1>', self.ctl.login)
         self.tk_var_register_code.trace_add('write', self.ctl.check_button_copy_register_code)
-
-
+        self.tk_button_paste_machine_code.bind('<Button-1>', self.ctl.button_paste_machine_code)
+        self.tk_button_copy_register_code.bind('<Button-1>', self.ctl.button_copy_register_code)
+        self.tk_button_create_register_code.bind('<Button-1>', self.ctl.button_create_register_code)
 
 if __name__ == "__main__":
     win = Win()
