@@ -96,7 +96,7 @@ class Control:
         pyperclip.copy(self.win.tk_var_register_code.get())
         showinfo(title="提示", message="复制成功!")
 
-    def encrypt(self, plaintext):
+    def encrypt(self, plaintext:str):
         from Crypto.Random import get_random_bytes
         from Crypto.Cipher import AES
         import base64

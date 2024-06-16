@@ -5,15 +5,13 @@
 窗口控制, 业务逻辑
 """
 import uuid
-import base64
 import ntplib
+import pyperclip
 import winreg
 import hashlib
 import traceback
 from tkinter.messagebox import showinfo
 from datetime import datetime
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
 
 class Control:
 
@@ -78,24 +76,13 @@ class Control:
         else:
             self.win.tk_button_register_code.config(state=tk.DISABLED)    
 
-    def copy_to_clipboard(self, event, widget):
-        # event.widget.select_range(0, 'end')
-        # event.widget.icursor('end')
-        # event.widget.clipboard_clear()
-        # event.widget.clipboard_append(event.widget.get())
-        widget.select_range(0, 'end')
-        widget.icursor('end')
-        self.win.clipboard_clear()
-        self.win.clipboard_append(widget.get())
+    def copy_to_clipboard(self, event):
+        pyperclip.copy(self.win.tk_var_machine_code.get())
         showinfo(title="提示", message="复制成功")
 
 
-    def paste_from_clipboard(self, event, widget):
-        # event.widget.delete(0, 'end')
-        # event.widget.insert(0, event.widget.clipboard_get())
-        widget.delete(0, 'end')
-        # widget.insert(0, self.win.clipboard_get())
-        self.win.tk_var_register_code.set(self.win.clipboard_get())
+    def paste_from_clipboard(self, event):
+        self.win.tk_var_register_code.set(pyperclip.paste())
 
     def get_beijin_time(self):
         try:
@@ -105,10 +92,9 @@ class Control:
             traceback.print_exc(file = open('error.log', 'a+'))
             return datetime.now()
 
-    def check_exp_time(self, exp_time):
+    def check_exp_time(self, expire):
         current_datetime = self.get_beijin_time()
-        exp_datetime = datetime.fromtimestamp(exp_time)
-        if current_datetime > exp_datetime:
+        if current_datetime > expire:
             return True
         else:
             return False
@@ -133,35 +119,54 @@ class Control:
             # 倒计时结束时显示提示
             self.win.tk_label_expire_status.config(text = f'已到期，请重新注册本软件')
 
+    def decrypt(self, ciphertext:str):
+        from Crypto.Cipher import AES
+        import base64
+
+        msg_bytes = bytes.fromhex(ciphertext)
+
+        key =  msg_bytes[:16]
+        # 提取 IV
+        iv = msg_bytes[16: 16 + AES.block_size]
+        # 提取实际密文
+        actual_ciphertext = msg_bytes[16 + AES.block_size:]
+        # 创建 AES CFB 解密对象
+        cipher = AES.new(key, AES.MODE_CFB, iv)
+        # 执行解密操作
+        base64_encoded = cipher.decrypt(actual_ciphertext)
+        return  base64.b64decode(base64_encoded).decode('utf-8')
+
     def check(self, register_code):
-        BLOCK_SIZE = AES.block_size # 16的倍数
-        # key长度必须是16, 24, 32
-        key = '9876543219876543'
         try:
-            encrypted_msg_bytes = bytes.fromhex(register_code)
-            cipher = AES.new(key.encode('utf8'), AES.MODE_ECB)
-            cipher_decrypt = cipher.decrypt(encrypted_msg_bytes)
-            decrypted_msg = unpad(cipher_decrypt, BLOCK_SIZE)
-            decoded_bytes = base64.b64decode(decrypted_msg)
-            license_dict = eval(decoded_bytes.decode('utf-8'))
-        except Exception as e:
+            license_text = self.decrypt(register_code)[::-1]
+        except Exception:
             traceback.print_exc(file = open('error.log', 'a+'))
             showinfo(title="提示", message="注册码不正确")
             return
+        print(license_text)
+        machine_code = license_text[:32]
+        checkbox_machine = license_text[32:33]
+        checkbox_expire =  license_text[33:34]
+        expire =  datetime.fromtimestamp(int(license_text[34:]) / 1000000)
+
+
+        print(machine_code)
+        print(type(checkbox_machine))
+        print(checkbox_expire)
+        print(int(license_text[34:]) / 1000000)
+        print(expire)
+
+        if int(checkbox_machine) == 1:
+            if self.win.tk_var_machine_code.get().strip() != machine_code:
+                showinfo(title="提示", message="注册码不匹配")
+                return
         
-        psw = license_dict['psw']
-        if psw and psw != self.win.tk_var_machine_code.get().strip():
-            showinfo(title="提示", message="注册码不匹配")
-            return
-        exp = license_dict['exp']
-        if exp:
-            if self.check_exp_time(exp):
+        if int(checkbox_expire) == 1:
+            if self.check_exp_time(expire):
                 showinfo(title="提示", message="注册码已过期")
                 return
             now = self.get_beijin_time()
-            exp = datetime.fromtimestamp(license_dict['exp'])
-
-            date = exp - now
+            date = expire - now
             seconds = date.seconds +  date.days * 24 * 60 * 60
             self.start_countdown(seconds)
         else:
