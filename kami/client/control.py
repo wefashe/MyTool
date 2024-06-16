@@ -9,14 +9,16 @@ import ntplib
 import pyperclip
 import winreg
 import hashlib
+import tkinter as tk
 import traceback
-from tkinter.messagebox import showinfo
+from time import ctime, sleep
+from tkinter.messagebox import showinfo, showwarning
 from datetime import datetime
 
 class Control:
 
     def __init__(self):
-        pass
+        self.check_network()
 
     def init(self, win):
         """
@@ -25,21 +27,20 @@ class Control:
         from wingui import WinGUI
         
         self.win:WinGUI = win
-        # 操作注册表需要赋予完全访问权限
 
-        # self.add_winreg_key(sub_key_name)
-        mac_address = self.get_mac_address()
-        machine_code = self.hash_msg(mac_address)
-        # self.win.tk_input_machine_code.insert(0, machine_code)
-        self.win.tk_var_machine_code.set(machine_code)
+        self.after_id = None
         self.win.tk_input_machine_code.config(state='readonly')
 
+        mac_address = self.get_mac_address()
+        machine_code = self.hash_msg(mac_address)
+        self.win.tk_var_machine_code.set(machine_code)
         register_code = self.get_register_code_form_winreg()
         if register_code:
              self.win.tk_var_register_code.set(register_code)
              self.check(register_code)
 
     def get_register_code_form_winreg(self):
+        # 操作注册表需要赋予完全访问权限
         self.winreg_root_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
         self.winreg_key_name = 'f'
         try:
@@ -68,9 +69,9 @@ class Control:
             # msg整体插入salt的每个元素之间
             msg = hashlib.md5((str(msg).join(salt)).encode('UTF-8')).hexdigest()
         return msg.upper()
+    
     def check_button_register_code(self, *args):
         var_register_code = self.win.tk_var_register_code.get().strip()
-        import tkinter as tk
         if var_register_code:
             self.win.tk_button_register_code.config(state=tk.NORMAL)
         else:
@@ -80,17 +81,37 @@ class Control:
         pyperclip.copy(self.win.tk_var_machine_code.get())
         showinfo(title="提示", message="复制成功")
 
-
     def paste_from_clipboard(self, event):
         self.win.tk_var_register_code.set(pyperclip.paste())
 
-    def get_beijin_time(self):
+    def check_network(self, host="www.baidu.com", port=80, timeout=5):
         try:
-            response = ntplib.NTPClient().request('ntp.aliyun.com')
-            return datetime.fromtimestamp(response.tx_time)
+            import socket
+            socket.setdefaulttimeout(timeout)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         except Exception as e:
-            traceback.print_exc(file = open('error.log', 'a+'))
-            return datetime.now()
+            showwarning("警告", "网络不可用，请检查您的连接")
+            exit()
+
+    def get_beijin_time(self, retries=3, delay=1):
+        self.check_network()
+        servers = [
+            "ntp.aliyun.com", "ntp1.aliyun.com", "ntp2.aliyun.com", 
+            "ntp3.aliyun.com", "ntp4.aliyun.com", "ntp5.aliyun.com", 
+            "ntp6.aliyun.com", "ntp7.aliyun.com"
+        ]
+        client = ntplib.NTPClient()
+        for attempt in range(len(servers)):
+            try:
+                response = client.request(servers[attempt-1])
+                print(f"time from {servers[attempt-1]}: {ctime(response.tx_time)}")
+                return datetime.fromtimestamp(response.tx_time)
+            except Exception as e:
+                print(e)
+                if attempt < retries - 1:
+                    print(f"Retrying in {delay} seconds...")
+                    sleep(delay)
+        return datetime.now()
 
     def check_exp_time(self, expire):
         current_datetime = self.get_beijin_time()
@@ -114,7 +135,7 @@ class Control:
         self.win.tk_label_expire_status.config(text = f'已注册，{days}天{hours:02}时{minutes:02}分{seconds:02}秒后过期')
         if count > 0:
             # 每1000毫秒（1秒）更新一次
-            self.win.after(1000, self.start_countdown, count - 1)
+            self.after_id = self.win.after(1000, self.start_countdown, count - 1)
         else:
             # 倒计时结束时显示提示
             self.win.tk_label_expire_status.config(text = f'已到期，请重新注册本软件')
@@ -137,6 +158,9 @@ class Control:
         return  base64.b64decode(base64_encoded).decode('utf-8')
 
     def check(self, register_code):
+        if self.after_id:
+            self.win.after_cancel(self.after_id)
+            self.after_id = None
         try:
             license_text = self.decrypt(register_code)[::-1]
         except Exception:

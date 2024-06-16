@@ -10,13 +10,14 @@ import hashlib
 import pyperclip
 from datetime import datetime, timedelta
 import tkinter as tk
+from time import ctime, sleep
 from dateutil.relativedelta import relativedelta
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, showwarning
 
 class Control:
 
     def __init__(self):
-        pass
+        self.check_network()
 
     def init(self, win):
         """
@@ -28,14 +29,36 @@ class Control:
         self.win.tk_var_radio_expire.set(2)
         self.win.tk_var_checkbox_machine.set(1)
         self.win.tk_button_copy_register_code.config(state=tk.DISABLED) 
-
-    def get_beijin_time(self):
+        self.win.tk_input_register_code.config(state='readonly') 
+    
+    def check_network(self, host="www.baidu.com", port=80, timeout=5):
         try:
-            response = ntplib.NTPClient().request('ntp.aliyun.com')
-            return datetime.fromtimestamp(response.tx_time)
+            import socket
+            socket.setdefaulttimeout(timeout)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         except Exception as e:
-            print(e)
-            return datetime.now()
+            showwarning("警告", "网络不可用，请检查您的连接")
+            exit()
+
+    def get_beijin_time(self, retries=3, delay=1):
+        self.check_network()
+        servers = [
+            "ntp.aliyun.com", "ntp1.aliyun.com", "ntp2.aliyun.com", 
+            "ntp3.aliyun.com", "ntp4.aliyun.com", "ntp5.aliyun.com", 
+            "ntp6.aliyun.com", "ntp7.aliyun.com"
+        ]
+        client = ntplib.NTPClient()
+        for attempt in range(len(servers)):
+            try:
+                response = client.request(servers[attempt-1])
+                print(f"time from {servers[attempt-1]}: {ctime(response.tx_time)}")
+                return datetime.fromtimestamp(response.tx_time)
+            except Exception as e:
+                print(e)
+                if attempt < retries - 1:
+                    print(f"Retrying in {delay} seconds...")
+                    sleep(delay)
+        return datetime.now()
         
     def get_exp_time(self, current_datetime, years=0, months=0, weeks=0, days=0, hours=0, minutes=0, seconds=0):
         # 使用relativedelta进行年和月的加减
@@ -83,11 +106,11 @@ class Control:
             self.win.tk_datetime_expire_date.config(state=tk.DISABLED)
 
     def check_button_copy_register_code(self, *args):
-            var_register_code = self.win.tk_var_register_code.get().strip()
-            if var_register_code:
-                self.win.tk_button_copy_register_code.config(state=tk.NORMAL)
-            else:
-                self.win.tk_button_copy_register_code.config(state=tk.DISABLED) 
+        var_register_code = self.win.tk_var_register_code.get().strip()
+        if var_register_code:
+            self.win.tk_button_copy_register_code.config(state=tk.NORMAL)
+        else:
+            self.win.tk_button_copy_register_code.config(state=tk.DISABLED) 
     
     def button_paste_machine_code(self, event):
         self.win.tk_var_machine_code.set(pyperclip.paste())
@@ -116,10 +139,10 @@ class Control:
         if var_checkbox_machine == 1:
             var_machine_code = self.win.tk_var_machine_code.get().strip()
             if not var_machine_code:
-                showinfo(title="提示", message="机器码为空!")
+                showwarning(title="警告", message="机器码为空!")
                 return
             if len(var_machine_code) != 32:
-                showinfo(title="提示", message="机器码不正确!")
+                showwarning(title="警告", message="机器码错误!")
                 return
         else:
             var_machine_code = hashlib.md5((str( datetime.timestamp(now))).encode('UTF-8')).hexdigest().upper()
@@ -144,6 +167,8 @@ class Control:
             expire = self.get_beijin_time()
         license_text = f'{var_machine_code}{var_checkbox_machine}{var_checkbox_expire}{int(datetime.timestamp(expire) * 1000000)}'[::-1]
         self.win.tk_var_register_code.set(self.encrypt(license_text))
-        showinfo(title="提示", message="注册码生成成功!")
+        pyperclip.copy(self.win.tk_var_register_code.get())
+        showinfo(title="提示", message="生成成功!")
+        
 
 
