@@ -143,24 +143,14 @@ class Control:
             traceback.print_exc(file = open('error.log', 'a+'))
             showinfo(title="提示", message="注册码不正确")
             return
-        print(license_text)
         machine_code = license_text[:32]
         checkbox_machine = license_text[32:33]
         checkbox_expire =  license_text[33:34]
         expire =  datetime.fromtimestamp(int(license_text[34:]) / 1000000)
-
-
-        print(machine_code)
-        print(type(checkbox_machine))
-        print(checkbox_expire)
-        print(int(license_text[34:]) / 1000000)
-        print(expire)
-
         if int(checkbox_machine) == 1:
             if self.win.tk_var_machine_code.get().strip() != machine_code:
                 showinfo(title="提示", message="注册码不匹配")
                 return
-        
         if int(checkbox_expire) == 1:
             if self.check_exp_time(expire):
                 showinfo(title="提示", message="注册码已过期")
