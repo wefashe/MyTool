@@ -107,9 +107,8 @@ class Control:
                 print(f"time from {servers[attempt-1]}: {ctime(response.tx_time)}")
                 return datetime.fromtimestamp(response.tx_time)
             except Exception as e:
-                print(e)
                 if attempt < retries - 1:
-                    print(f"Retrying in {delay} seconds...")
+                    print(f"Retrying in {delay} seconds...", e)
                     sleep(delay)
         return datetime.now()
 
@@ -161,24 +160,27 @@ class Control:
         if self.after_id:
             self.win.after_cancel(self.after_id)
             self.after_id = None
+        if len(register_code) != 224:
+            showinfo(title="提示", message="注册码错误")
+            return False
         try:
             license_text = self.decrypt(register_code)[::-1]
         except Exception:
             traceback.print_exc(file = open('error.log', 'a+'))
-            showinfo(title="提示", message="注册码不正确")
-            return
+            showinfo(title="提示", message="注册码错误")
+            return False
         machine_code = license_text[:32]
         checkbox_machine = license_text[32:33]
         checkbox_expire =  license_text[33:34]
-        expire =  datetime.fromtimestamp(int(license_text[34:]) / 1000000)
+        expire =  datetime.fromtimestamp(int(license_text[34:50]) / 1000000)
         if int(checkbox_machine) == 1:
             if self.win.tk_var_machine_code.get().strip() != machine_code:
                 showinfo(title="提示", message="注册码不匹配")
-                return
+                return False
         if int(checkbox_expire) == 1:
             if self.check_exp_time(expire):
                 showinfo(title="提示", message="注册码已过期")
-                return
+                return False
             now = self.get_beijin_time()
             date = expire - now
             seconds = date.seconds +  date.days * 24 * 60 * 60
@@ -186,8 +188,13 @@ class Control:
         else:
             self.win.tk_label_expire_status.config(text = f'已注册，永久有效')
         self.set_register_code_to_winreg(register_code)
+        # TODO 更新远程数据库, ID为注册码, 更新登录电脑的ip,系统版本,电脑用户名,登录时间
+        return True
 
     def login(self, event):
         register_code = self.win.tk_var_register_code.get().strip()
-        self.check(register_code)
-        showinfo(title="提示", message="注册成功")
+        if self.check(register_code):
+            showinfo(title="提示", message="注册成功")
+        else:
+            # 删除注册表
+            pass

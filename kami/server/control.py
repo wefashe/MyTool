@@ -5,6 +5,8 @@
 窗口控制, 业务逻辑
 """
 
+import random
+import string
 import ntplib
 import hashlib
 import pyperclip
@@ -54,9 +56,8 @@ class Control:
                 print(f"time from {servers[attempt-1]}: {ctime(response.tx_time)}")
                 return datetime.fromtimestamp(response.tx_time)
             except Exception as e:
-                print(e)
                 if attempt < retries - 1:
-                    print(f"Retrying in {delay} seconds...")
+                    print(f"Retrying in {delay} seconds...", e)
                     sleep(delay)
         return datetime.now()
         
@@ -91,18 +92,15 @@ class Control:
             self.win.tk_radio_expire_week.config(state=tk.DISABLED)
             self.win.tk_radio_expire_month.config(state=tk.DISABLED)
             self.win.tk_radio_expire_quarter.config(state=tk.DISABLED)
-            self.win.tk_datetime_expire_date.set_date(self.get_beijin_time()) 
             self.win.tk_radio_expire_date.config(state=tk.DISABLED)
             self.win.tk_datetime_expire_date.config(state=tk.DISABLED)
 
     def check_radio_expire_date(self, *args):
         var_radio_expire = self.win.tk_var_radio_expire.get()      
-        now = self.get_beijin_time()
         if var_radio_expire == 4:
             self.win.tk_datetime_expire_date.config(state=tk.NORMAL)
-            self.win.tk_datetime_expire_date.set_date(now)  
+            self.win.tk_datetime_expire_date.set_date(self.get_beijin_time())  
         else:
-            self.win.tk_datetime_expire_date.set_date(now)  
             self.win.tk_datetime_expire_date.config(state=tk.DISABLED)
 
     def check_button_copy_register_code(self, *args):
@@ -132,6 +130,13 @@ class Control:
         base64_encoded = base64.b64encode(plaintext.encode('utf-8'))
         ciphertext = cipher.encrypt(base64_encoded)
         return (key + iv + ciphertext).hex().upper()
+    
+    def generate_random_string(self):
+        # 定义字符集，包括大写字母、小写字母和数字
+        characters = string.ascii_letters + string.digits
+        # 使用random.choice()从字符集中随机选择5个字符
+        random_string = ''.join(random.choice(characters) for _ in range(9))
+        return random_string
 
     def button_create_register_code(self, event):
         now = self.get_beijin_time()
@@ -164,10 +169,11 @@ class Control:
             else:
                 expire = datetime.combine(now.date(), datetime.max.time())
         else:
-            expire = self.get_beijin_time()
-        license_text = f'{var_machine_code}{var_checkbox_machine}{var_checkbox_expire}{int(datetime.timestamp(expire) * 1000000)}'[::-1]
+            expire = now
+        license_text = f'{var_machine_code}{var_checkbox_machine}{var_checkbox_expire}{int(datetime.timestamp(expire) * 1000000)}{self.generate_random_string().upper()}'[::-1]
         self.win.tk_var_register_code.set(self.encrypt(license_text))
         pyperclip.copy(self.win.tk_var_register_code.get())
+        # TODO 存远程数据库, ID为注册码, 加上生成电脑的ip,系统版本,电脑用户名,创建时间
         showinfo(title="提示", message="生成成功!")
         
 
