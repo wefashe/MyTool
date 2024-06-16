@@ -31,7 +31,8 @@ class Control:
         self.win.tk_var_radio_expire.set(2)
         self.win.tk_var_checkbox_machine.set(1)
         self.win.tk_button_copy_register_code.config(state=tk.DISABLED) 
-        self.win.tk_input_register_code.config(state='readonly') 
+        self.win.tk_input_register_code.config(state='readonly')
+        self.win.tk_datetime_expire_date.config(mindate=self.get_beijin_time())
     
     def check_network(self, host="www.baidu.com", port=80, timeout=5):
         try:
