@@ -89,8 +89,8 @@ class WinGUI(Win):
         事件绑定
         """
         self.tk_var_register_code.trace_add('write', self.ctl.check_button_register_code)
-        self.tk_button_machine_code.bind('<Button-1>', self.ctl.copy_to_clipboard)
-        self.tk_button_register_code.bind('<Button-1>', self.ctl.login)
+        self.tk_button_machine_code.config(command=self.ctl.copy_to_clipboard)
+        self.tk_button_register_code.config(command=self.ctl.login)
 
 if __name__ == "__main__":
     win = Win()

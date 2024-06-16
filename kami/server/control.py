@@ -110,10 +110,10 @@ class Control:
         else:
             self.win.tk_button_copy_register_code.config(state=tk.DISABLED) 
     
-    def button_paste_machine_code(self, event):
+    def button_paste_machine_code(self):
         self.win.tk_var_machine_code.set(pyperclip.paste())
 
-    def button_copy_register_code(self, event):
+    def button_copy_register_code(self):
         pyperclip.copy(self.win.tk_var_register_code.get())
         showinfo(title="提示", message="复制成功!")
 
@@ -138,7 +138,7 @@ class Control:
         random_string = ''.join(random.choice(characters) for _ in range(9))
         return random_string
 
-    def button_create_register_code(self, event):
+    def button_create_register_code(self):
         now = self.get_beijin_time()
         var_checkbox_machine = self.win.tk_var_checkbox_machine.get()
         if var_checkbox_machine == 1:

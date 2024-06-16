@@ -77,7 +77,7 @@ class Control:
         else:
             self.win.tk_button_register_code.config(state=tk.DISABLED)    
 
-    def copy_to_clipboard(self, event):
+    def copy_to_clipboard(self):
         pyperclip.copy(self.win.tk_var_machine_code.get())
         showinfo(title="提示", message="复制成功")
 
@@ -191,7 +191,7 @@ class Control:
         # TODO 更新远程数据库, ID为注册码, 更新登录电脑的ip,系统版本,电脑用户名,登录时间
         return True
 
-    def login(self, event):
+    def login(self):
         register_code = self.win.tk_var_register_code.get().strip()
         if self.check(register_code):
             showinfo(title="提示", message="注册成功")

@@ -130,10 +130,10 @@ class WinGUI(Win):
         self.tk_var_checkbox_machine.trace_add('write', self.ctl.check_checkbox_machine)
         self.tk_var_checkbox_expire.trace_add('write', self.ctl.check_checkbox_expire)
         self.tk_var_register_code.trace_add('write', self.ctl.check_button_copy_register_code)
-        self.tk_button_paste_machine_code.bind('<Button-1>', self.ctl.button_paste_machine_code)
-        self.tk_button_copy_register_code.bind('<Button-1>', self.ctl.button_copy_register_code)
-        self.tk_button_create_register_code.bind('<Button-1>', self.ctl.button_create_register_code)
-
+        self.tk_button_paste_machine_code.config(command=self.ctl.button_paste_machine_code)
+        self.tk_button_copy_register_code.config(command=self.ctl.button_copy_register_code)
+        self.tk_button_create_register_code.config(command=self.ctl.button_create_register_code)
+        
 if __name__ == "__main__":
     win = Win()
     win.show()
