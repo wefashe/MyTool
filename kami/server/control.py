@@ -5,6 +5,7 @@
 窗口控制, 业务逻辑
 """
 
+import os
 import random
 import string
 import ntplib
@@ -28,6 +29,10 @@ class Control:
         from wingui import WinGUI
         
         self.win:WinGUI = win
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(script_dir, "server.ico")
+        self.win.iconbitmap(icon_path)
+
         self.win.tk_var_radio_expire.set(2)
         self.win.tk_var_checkbox_machine.set(1)
         self.win.tk_button_copy_register_code.config(state=tk.DISABLED) 

@@ -4,6 +4,8 @@
 """
 窗口控制, 业务逻辑
 """
+
+import os
 import uuid
 import ntplib
 import pyperclip
@@ -27,6 +29,9 @@ class Control:
         from wingui import WinGUI
         
         self.win:WinGUI = win
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(script_dir, "client.ico")
+        self.win.iconbitmap(icon_path)
 
         self.after_id = None
         self.win.tk_input_machine_code.config(state='readonly')
