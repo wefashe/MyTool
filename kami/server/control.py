@@ -175,7 +175,7 @@ class Control:
         app_code = '01'
         app_info = self.random_str(12).upper() + app_code
         timestamp = int(datetime.timestamp(expire) * 1000000)
-        # 14 + 1 + 32 + 1 + 16 = 64
+        # 14 + 1 + 32 + 1 + 16 = 64      14  15  47  48  64
         license_text = f'{app_info}{var_checkbox_machine}{var_machine_code}{var_checkbox_expire}{timestamp}'
         print(len(license_text), license_text)
         encrypt_license_text = self.encrypt(license_text[::-1])

@@ -160,7 +160,7 @@ class Control:
         if self.after_id:
             self.win.after_cancel(self.after_id)
             self.after_id = None
-        if len(register_code) != 224:
+        if len(register_code) != 240:
             showinfo(title="提示", message="注册码错误")
             return False
         try:
@@ -169,10 +169,16 @@ class Control:
             traceback.print_exc(file = open('error.log', 'a+'))
             showinfo(title="提示", message="注册码错误")
             return False
-        machine_code = license_text[:32]
-        checkbox_machine = license_text[32:33]
-        checkbox_expire =  license_text[33:34]
-        expire =  datetime.fromtimestamp(int(license_text[34:50]) / 1000000)
+        
+        app_info = license_text[0:14]
+        app_code = app_info[-2:]
+        if app_code != '01':
+            showinfo(title="提示", message="注册码不匹配")
+            return False
+        checkbox_machine = license_text[14:15]
+        machine_code = license_text[15:47]
+        checkbox_expire =  license_text[47:48]
+        expire =  datetime.fromtimestamp(int(license_text[48:64]) / 1000000)
         if int(checkbox_machine) == 1:
             if self.win.tk_var_machine_code.get().strip() != machine_code:
                 showinfo(title="提示", message="注册码不匹配")
