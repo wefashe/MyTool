@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 
-# pyinstaller -F -w --clean --onefile --hidden-import babel.numbers main.py
+# pyinstaller -F -w --clean --onefile --hidden-import babel.numbers main.py -i server.ico --name=server
 
 from wingui import WinGUI
 from control import Control

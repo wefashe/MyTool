@@ -5,6 +5,7 @@
 窗口控制, 业务逻辑
 """
 
+import os
 import random
 import string
 import ntplib
@@ -28,6 +29,10 @@ class Control:
         from wingui import WinGUI
         
         self.win:WinGUI = win
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(script_dir, "server.ico")
+        self.win.iconbitmap(icon_path)
+
         self.win.tk_var_radio_expire.set(2)
         self.win.tk_var_checkbox_machine.set(1)
         self.win.tk_button_copy_register_code.config(state=tk.DISABLED) 
@@ -132,11 +137,11 @@ class Control:
         ciphertext = cipher.encrypt(base64_encoded)
         return (key + iv + ciphertext).hex().upper()
     
-    def generate_random_string(self):
+    def random_str(self, len = 5):
         # 定义字符集，包括大写字母、小写字母和数字
         characters = string.ascii_letters + string.digits
         # 使用random.choice()从字符集中随机选择5个字符
-        random_string = ''.join(random.choice(characters) for _ in range(9))
+        random_string = ''.join(random.choice(characters) for _ in range(len))
         return random_string
 
     def button_create_register_code(self):
@@ -171,10 +176,18 @@ class Control:
                 expire = datetime.combine(now.date(), datetime.max.time())
         else:
             expire = now
-        license_text = f'{var_machine_code}{var_checkbox_machine}{var_checkbox_expire}{int(datetime.timestamp(expire) * 1000000)}{self.generate_random_string().upper()}'[::-1]
-        self.win.tk_var_register_code.set(self.encrypt(license_text))
-        pyperclip.copy(self.win.tk_var_register_code.get())
-        # TODO 存远程数据库, ID为注册码, 加上生成电脑的ip,系统版本,电脑用户名,创建时间
+        # app_info 软件信息，现在暂无，随机数代替
+        app_code = '01'
+        app_info = self.random_str(12).upper() + app_code
+        timestamp = int(datetime.timestamp(expire) * 1000000)
+        # 14 + 1 + 32 + 1 + 16 = 64      14  15  47  48  64
+        license_text = f'{app_info}{var_checkbox_machine}{var_machine_code}{var_checkbox_expire}{timestamp}'
+        print(len(license_text), license_text)
+        encrypt_license_text = self.encrypt(license_text[::-1])
+        print(len(encrypt_license_text), encrypt_license_text)
+        # TODO 先存远程数据库, ID为注册码, 加上生成电脑的ip,系统版本,电脑用户名,创建时间
+        self.win.tk_var_register_code.set(encrypt_license_text)
+        pyperclip.copy(encrypt_license_text)
         showinfo(title="提示", message="生成成功!")
         
 
