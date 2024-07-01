@@ -2,6 +2,7 @@ import json
 import time
 import base64
 import urllib.parse
+from datetime import datetime
 
 def decode_base64(encoded):
     standard_base64 = encoded.replace('-', '+').replace('_', '/')
@@ -18,7 +19,12 @@ def decode_token(token:str):
 
 def get_token_info(token) -> dict:
     header, body = decode_token(token)
-    return json.loads(body)
+    body_obj = json.loads(body)
+    body_obj["exp"] = datetime.fromtimestamp(body_obj["exp"])
+    body_obj["nbf"] = datetime.fromtimestamp(body_obj["nbf"])
+    body_obj["iat"] = datetime.fromtimestamp(body_obj["iat"])
+    body_obj["oat"] = datetime.fromtimestamp(body_obj["oat"])
+    return body_obj
 
 def get_cookie(token:str):
     body_obj = get_token_info(token)
@@ -28,6 +34,7 @@ def get_cookie(token:str):
 if __name__ == '__main__':
     token = 'eyAidHlwIjogIkpXVCIsICJhbGciOiAiRWREU0EiIH0.eyAiaXNzIjogInN0ZWFtIiwgInN1YiI6ICI3NjU2MTE5OTE3NjgzMjExOCIsICJhdWQiOiBbICJjbGllbnQiLCAid2ViIiwgInJlbmV3IiwgImRlcml2ZSIgXSwgImV4cCI6IDE3MjgxNzkxODUsICJuYmYiOiAxNjg4NTk1MzA0LCAiaWF0IjogMTY5NzIzNTMwNCwgImp0aSI6ICIxNDU1XzIzNTBDMUJBX0UwQTA5IiwgIm9hdCI6IDE2OTcyMzUzMDQsICJnZW4iOiAxLCAicGVyIjogMSwgImlwX3N1YmplY3QiOiAiODIuMTEuMTU0LjUwIiwgImlwX2NvbmZpcm1lciI6ICI4Mi4xMS4xNTQuNTAiIH0.GDKSalpYq1c3f9NdPHqwxj3-QY_Jgx8by6GCAy1ftGraOK91b4TdQx9PGADTIc0U00K5JX3-GLsShO5xgXepDw'
     # token = 'eyAidHlwIjogIkpXVCIsICJhbGciOiAiRWREU0EiIH0.eyAiaXNzIjogInN0ZWFtIiwgInN1YiI6ICI3NjU2MTE5OTE3NjgzMjExOCIsICJhdWQiOiBbICJjbGllbnQiLCAid2ViIiwgInJlbmV3IiwgImRlcml2ZSIgXSwgImV4cCI6IDE3MjgxNzkxODUsICJuYmYiOiAxNjg4NTk1MzA0LCAiaWF0IjogMTY5NzIzNTMwNCwgImp0aSI6ICIxNDU1XzIzNTBDMUJBX0UwQTA5IiwgIm9hdCI6IDE2OTcyMzUzMDQsICJnZW4iOiAxLCAicGVyIjogMSwgImlwX3N1YmplY3QiOiAiODIuMTEuMTU0LjUwIiwgImlwX2NvbmZpcm1lciI6ICI4Mi4xMS4xNTQuNTAiIH0.GDKSalpYq1c3f9NdPHqwxj3-QY_Jgx8by6GCAy1ftGraOK91b4TdQx9PGADTIc0U00K5JX3-GLsShO5xgXepDw'
+    token = 'eyAidHlwIjogIkpXVCIsICJhbGciOiAiRWREU0EiIH0.eyAiaXNzIjogInN0ZWFtIiwgInN1YiI6ICI3NjU2MTE5OTY5Nzc1MTI1MiIsICJhdWQiOiBbICJjbGllbnQiLCAid2ViIiwgInJlbmV3IiwgImRlcml2ZSIgXSwgImV4cCI6IDE3MzY4OTk3NTIsICJuYmYiOiAxNzA5OTA3NjYwLCAiaWF0IjogMTcxODU0NzY2MCwgImp0aSI6ICIxNUM2XzI0OTNFMEY0XzI4QTg5IiwgIm9hdCI6IDE3MTg1NDc2NjAsICJwZXIiOiAxLCAiaXBfc3ViamVjdCI6ICIzNy4yMTMuMzQuMTIyIiwgImlwX2NvbmZpcm1lciI6ICIzNy4yMTMuMzQuMTIyIiB9.NFc_L1GLj8syG3hbbcNXuEsmxrdni5eTaIYp_hJ8Bs79drEDDW7au9gmhRMWTeyia-P75eElL516u6n9cJPKBw'
     header, body = decode_token(token)
     print(header)
     body_obj = json.loads(body)

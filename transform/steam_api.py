@@ -1,3 +1,4 @@
+import json
 import requests
 from requests.adapters import HTTPAdapter
 
@@ -6,6 +7,7 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 def get_cm_list():
+    resp_json = None
     try:
         # 获取 CM (Connection Manager) 服务器列表 用于 Steam 帐户登录认证、好友在线状态、聊天和游戏邀请等等方面 
         # cellid 地区相关id， format 格式, vdf js xml
@@ -35,3 +37,11 @@ def get_cm_list():
         print(f'HTTP错误, 状态码: {e.response.status_code}, {e}')
     except ValueError as e:
         print('响应解析异常: ', e)
+    if not resp_json:
+        with open('cmList.json', 'r') as file:
+            resp_json = json.load(file)
+    cmList = resp_json['response']['serverlist']
+    cmList = [server for server in cmList if server['type'] =='websockets' and server['realm'] == 'steamglobal']
+    cmList = sorted(cmList, key=lambda x: x["wtd_load"])
+    # print(json.dumps(cmList, ensure_ascii=False, indent=2))
+    return cmList
