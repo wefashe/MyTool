@@ -10,16 +10,18 @@ def decode_base64(encoded):
     decoded_str = decoded_bytes.decode('utf-8')
     return decoded_str
 
-
 def decode_token(token:str):
     parts = token.split('.')
     if len(parts) != 3:
         raise ValueError('Invalid Token')
     return decode_base64(parts[0]), decode_base64(parts[1])
 
-def get_cookie(token:str):
+def get_token_info(token) -> dict:
     header, body = decode_token(token)
-    body_obj = json.loads(body)
+    return json.loads(body)
+
+def get_cookie(token:str):
+    body_obj = get_token_info(token)
     cookie_str = urllib.parse.quote(body_obj['sub']+'||'+token)
     return cookie_str
     
