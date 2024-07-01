@@ -7,6 +7,7 @@ import asyncio
 import logging
 import requests
 import websockets
+import token_decode
 
 from emsg_enum import EMsg
 from eresult_enum import EResult
@@ -15,7 +16,7 @@ import steammessages_clientserver_login_pb2
 import steammessages_base_pb2
 import steammessages_auth_pb2
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 
 def get_cm_list():
     # 获取 CM (Connection Manager) 服务器列表 用于 Steam 帐户登录认证、好友在线状态、聊天和游戏邀请等等方面 
@@ -77,6 +78,7 @@ def handle_message(body):
             accesstoken_response = steammessages_auth_pb2.CAuthentication_AccessToken_GenerateForApp_Response()
             accesstoken_response.ParseFromString(msgBody)
             print('access_token:', accesstoken_response.access_token)
+            print('cookie:','steamLoginSecure='+ token_decode.get_cookie(accesstoken_response.access_token))
         else:
             error_message = proto_buf_header.error_message
             print(result, error_message)
